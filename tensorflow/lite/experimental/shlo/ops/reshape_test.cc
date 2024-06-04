@@ -18,6 +18,10 @@ using testing::FloatEq;
 using testing::Pointwise;
 
 namespace shlo_ref{
+    template <>
+struct ParamName<ReshapeOp> {
+  static std::string Get() { return "reshape"; }
+};
     namespace{
         template<class T>
         struct NonQuantizedIntReshapeTest : ::testing::Test {};
@@ -38,7 +42,7 @@ namespace shlo_ref{
                 .type = TensorType{.shape = shape_r, .element_type = TypeParam::kStorage},
                 .data = output_data.data()};
 
-            auto op = Create(reshapeOp::Attributes{});
+            auto op = Create(ReshapeOp::Attributes{});
 
             Vector<StorageT> expected_data = Vector<StorageT>{1, 2, 7, 8, 3, 4, 9, 10, 5, 6, 11, 12};
             ASSERT_OK(Prepare(op, operand, output_tensor));
@@ -46,6 +50,7 @@ namespace shlo_ref{
             EXPECT_THAT(output_data, expected_data);
 
         }
+        
         TYPED_TEST(NonQuantizedIntReshapeTest, IntTestTypesRaiseAnError1) {
 
             using StorageT = typename TypeParam::StorageT;
@@ -61,7 +66,7 @@ namespace shlo_ref{
                 .type = TensorType{.shape = shape_r, .element_type = TypeParam::kStorage},
                 .data = output_data.data()};
 
-                auto op = Create(reshapeOp::Attributes{});
+                auto op = Create(ReshapeOp::Attributes{});
                 const absl::Status status = Prepare(op, operand, output_tensor);
                 EXPECT_THAT(status, shlo_ref::testing::StatusIs(
                                         absl::StatusCode::kFailedPrecondition));

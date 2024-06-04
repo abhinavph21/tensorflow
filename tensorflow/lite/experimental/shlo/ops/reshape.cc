@@ -28,91 +28,8 @@ absl::Status CheckParameters(const Tensor& operand, Tensor& result) {
     return absl::FailedPreconditionError(
         "The element type of operand and result must be the same.");
   }
-  //         if (!operand.IsPerAxisQuantized()) {
-
-  // }
-
-//   if (operand.quantized_per_axis_element_type().QuantizedDimension() !=
-//       result.quantized_per_axis_element_type().QuantizedDimension()) {
-//     if (operand.element_type() != result.element_type()) {
-//       return absl::FailedPreconditionError(
-//           "The element type of operand and result must be the same although "
-//           "operand precision and result precision is not same.");
-//     }
-//   }
-
-  // constraint 2
-  // if (operand.SizeInBytes() != result.SizeInBytes()) {
-  //   return absl::FailedPreconditionError(
-  //       "The element type of operand and result must be of same size.");
-  // }
 }
-  // constraint 3
-  // if (operand.IsPerAxisQuantized()) {
-  //         const DimensionSize operand_pre_quant_product = Reduce(
-  //             Dims(operand, {0, 1, ..., quantization_dimension(operand) -
-  //             1}), 1, {0}, [](const DimensionSize& x, const DimensionSize& y)
-  //             { return x * y; });
-  //         const DimensionSize result_pre_quant_product = Reduce(
-  //             Dims(result, {0, 1, ..., quantization_dimension(result) - 1}),
-  //             1, {0}, [](const DimensionSize& x, const DimensionSize& y) {
-  //             return x * y; });
-  //         if (operand_pre_quant_product != result_pre_quant_product) {
-  //             return absl::InternalError(
-  //                 "Per-axis quantized reshape: Product of pre-quantization
-  //                 dimensions mismatch.");
-  //         }
 
-  //         if (dim(operand, quantization_dimension(operand)) !=
-  //             dim(result, quantization_dimension(result))) {
-  //             // Handle error: Quantization dimension sizes don't match
-  //             return absl::InternalError(
-  //                 "Per-axis quantized reshape: Quantization dimension sizes
-  //                 mismatch.");
-  //         }
-
-  //         const DimensionSize operand_post_quant_product = Reduce(
-  //             Dims(operand, {quantization_dimension(operand) + 1, ...,
-  //             rank(operand) - 1}), 1, {0}, [](const DimensionSize& x, const
-  //             DimensionSize& y) { return x * y; });
-  //         const DimensionSize result_post_quant_product = Reduce(
-  //             Dims(result, {quantization_dimension(result) + 1, ...,
-  //             rank(result) - 1}), 1, {0}, [](const DimensionSize& x, const
-  //             DimensionSize& y) { return x * y; });
-  //         if (operand_post_quant_product != result_post_quant_product) {
-  //             // Handle error: post-quantization dimensions don't match
-  //             return absl::InternalError(
-  //                 "Per-axis quantized reshape: Product of post-quantization
-  //                 dimensions mismatch.");
-  //         }
-  //     }
-  //     return absl::OkStatus();
-
-// template <DataType storage_type>
-// absl::Status PrepareTensorsQuantized(reshapeOp& op, const Tensor& operand,
-//                                  Tensor& output) {
-//     using StorageT = StorageType<storage_type>;
-//     const DimensionSize operand_size = operand.NumElements();
-//     const DimensionSize output_size = output.NumElements();
-//     op.operand_dequantized_data =
-//         std::vector<std::byte>(operand_size * sizeof(StorageT));
-//     const Shape operand_shape = operand.shape();
-//     Tensor operand_dequantized{
-//         .type = TensorType{.shape = operand_shape, .element_type =
-//         storage_type}, .data = op.operand_dequantized_data.data()};
-//     op.output_dequantized_data =
-//         std::vector<std::byte>(output_size * sizeof(StorageT));
-//     const Shape output_dequantized_shape = output.shape();
-//     Tensor output_dequantized{
-//         .type = TensorType{.shape = output_dequantized_shape,
-//                             .element_type = storage_type},
-//         .data = op.output_dequantized_data.data()};
-
-//     op.operand_dequantized = std::move(operand_dequantized);
-//     op.output_dequantized = std::move(output_dequantized);
-
-//     return absl::OkStatus();
-// }
 template <DataType storage_type>
 absl::Status ReshapeTensor(const Tensor& operand, Tensor& output) {
   using StorageT = StorageType<storage_type>;
@@ -133,46 +50,12 @@ absl::Status ReshapeTensor(const Tensor& operand, Tensor& output) {
   }
   return absl::OkStatus();
 }
-// template<DataType storage_type,DataType expressed_type>
-// void DequantizeOpQuantizePerTensor(reshapeOp& op, const Tensor& operand,
-//                                Tensor& output) {
-//     using StorageT = StorageType<storage_type>;
-//     using ExpressedT = StorageType<expressed_type>;
-//     const StorageT* operand_data = operand.GetDataAs<storage_type>();
-//     ExpressedT* operand_dequantized_data =
-//         op.operand_dequantized.GetDataAs<expressed_type>();
-//     StorageT* output_data = output.GetDataAs<storage_type>();
-//     ExpressedT* output_dequantized_data =
-//         op.output_dequantized.GetDataAs<expressed_type>();
-//     const DimensionSize operand_num_elements = operand.NumElements();
-//     const StorageT operand_zero_point =
-//         operand.quantized_per_tensor_element_type().ZeroPointAs<storage_type>();
-//     const ExpressedT operand_scale =
-//         operand.quantized_per_tensor_element_type().ScaleAs<expressed_type>();
 
-//     for (DimensionSize i = 0; i < operand_num_elements;
-//         ++i, ++operand_data, ++operand_dequantized_data) {
-//         *operand_dequantized_data =
-//             Dequantize(*operand_data, operand_zero_point, operand_scale);
-//     }
-//     absl::Status status =
-//         Evaluate(op, op.operand_dequantized, op.output_dequantized);
-//     const DimensionSize output_num_elements = output.NumElements();
-//     const StorageT output_zero_point =
-//         output.quantized_per_tensor_element_type().ZeroPointAs<storage_type>();
-//     const ExpressedT output_scale =
-//         output.quantized_per_tensor_element_type().ScaleAs<expressed_type>();
-//     const ExpressedT inv_scale = static_cast<ExpressedT>(1 / output_scale);
-//     for (DimensionSize i = 0; i < output_num_elements;
-//             ++i, ++output_dequantized_data, ++output_data) {
-//         *output_data = Quantize<storage_type, expressed_type>(
-//             *output_dequantized_data, output_zero_point, inv_scale);
-//     }
-// }
-reshapeOp Create(reshapeOp::Attributes attributes) {
+ReshapeOp Create(ReshapeOp::Attributes attributes) {
   return {.attributes = attributes};
 }
-absl::Status Prepare(reshapeOp& op, const Tensor& operand, Tensor& result) {
+
+absl::Status Prepare(ReshapeOp& op, const Tensor& operand, Tensor& result) {
   absl::Status status = CheckParameters(operand, result);
   
   if(!status.ok()) {
@@ -183,16 +66,7 @@ absl::Status Prepare(reshapeOp& op, const Tensor& operand, Tensor& result) {
   return absl::OkStatus();
 }
 
-absl::Status Evaluate(reshapeOp& op, const Tensor& operand, Tensor& result) {
-  // if (operand.IsQuantized()) {
-  //     if (operand.IsPerTensorQuantized()) {
-  //     DISPATCH_QUANTIZED(
-  //         DequantizeOpQuantizePerTensor,
-  //         operand.quantized_per_tensor_element_type().StorageType(),
-  //         operand.quantized_per_tensor_element_type().ExpressedType(), op,
-  //         operand, result);
-  //     }
-  // }
+absl::Status Evaluate(ReshapeOp& op, const Tensor& operand, Tensor& result) {
 
   DISPATCH_BOOL_INT_FLOAT(ReshapeTensor, result.tensor_element_type(), operand,
                           result);

@@ -60,29 +60,6 @@ absl::Status CheckParameters(
   return absl::OkStatus();
 }
 
-// template <DataType storage_type>
-// absl::Status EvaluateImpl(
-//     const Tensor& operand,
-//     absl::InlinedVector<Axis, kMaxNumDimensions>& permutation, Tensor& output) {
-//   using StorageT = StorageType<storage_type>;
-
-//   StorageT* output_buffer = output.GetDataAs<storage_type>();
-//   const DimensionSize operand_size = operand.NumElements();
-//   const Axis operand_rank = operand.Rank();
-
-//   absl::InlinedVector<DimensionSize, kMaxNumDimensions> operand_index(operand_rank);
-//   absl::InlinedVector<DimensionSize, kMaxNumDimensions> output_index(operand_rank);
-
-//   for (DimensionSize k = 0; k < operand_size; ++k) {
-//     operand.GetNdIndex(k, operand_index);
-//     for (DimensionSize d = 0; d < operand_rank; ++d) {
-//       output_index[d] = operand_index[permutation[d]];
-//     }
-//     output_buffer[output.FlattenIndex(output_index)] =
-//         operand.Get<storage_type>(operand_index);
-//   }
-//   return absl::OkStatus();
-// }
 
 TransposeOp Create(TransposeOp::Attributes attributes) {
   return {.attributes = attributes};

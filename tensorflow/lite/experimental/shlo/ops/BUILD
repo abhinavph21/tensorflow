@@ -157,7 +157,7 @@ cc_library(
 cc_library(
     name = "reshape",
     srcs = ["reshape.cc"],
-    hdrs = ["reshape.h"],
+    hdrs = ["reshape.h", "util.h"],
     deps = [
         ":util",
         "//tensorflow/lite/experimental/shlo:data_type",

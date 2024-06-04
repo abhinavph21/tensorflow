@@ -6,17 +6,17 @@
 
 namespace shlo_ref {
 
-class reshapeOp {
+class ReshapeOp {
  public:
   struct Attributes {};
   Attributes attributes;
 };
 
-reshapeOp Create(reshapeOp::Attributes);
+ReshapeOp Create(ReshapeOp::Attributes);
 
-absl::Status Prepare(reshapeOp& op, const Tensor& operand, Tensor& result);
+absl::Status Prepare(ReshapeOp& op, const Tensor& operand, Tensor& result);
 
-absl::Status Evaluate(reshapeOp& op, const Tensor& operand, Tensor& result);
+absl::Status Evaluate(ReshapeOp& op, const Tensor& operand, Tensor& result);
 
 }  // namespace shlo_ref
 
