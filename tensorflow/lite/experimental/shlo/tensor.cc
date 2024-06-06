@@ -62,18 +62,11 @@ DataType Tensor::StorageType() const {
 }
 
 DataType Tensor::ExpressedType() const {
-  assert(IsQuantized());
-  return std::visit(shlo_ref::Overload(
-                        [](const QuantizedPerTensorTensorType& t) {
-                          return t.element_type.ExpressedType();
-                        },
-                        [](const QuantizedPerAxisTensorType& t) {
-                          return t.element_type.ExpressedType();
-                        },
-                        [](const auto& t) -> DataType {
-                          ABSL_LOG(FATAL) << "Unsupported tensor type";
-                        }),
-                    type);
+  return std::visit(
+      shlo_ref::Overload(
+          [](const TensorType& t) -> DataType { ABSL_CHECK(false); },
+          [](const auto& t) { return t.element_type.ExpressedType(); }),
+      type);
 }
 
 DimensionSize Tensor::NumElements() const { return shape().NumElements(); }
@@ -133,8 +126,10 @@ TensorElementTypeVariant Tensor::element_type() const {
 }
 
 void Tensor::GetNdIndex(
-    size_t index, absl::InlinedVector<Axis, kMaxNumDimensions>& indices) const {
-  size_t divisor = 1, dim = 0;
+    DimensionSize index,
+    absl::InlinedVector<DimensionSize, kMaxNumDimensions>& indices) const {
+  DimensionSize divisor = 1;
+  DimensionSize dim = 0;
   Axis rank = Rank();
   for (int64_t i = static_cast<int64_t>(rank) - 1; i >= 0; --i) {
     dim = shape().Dim(i);
@@ -144,20 +139,35 @@ void Tensor::GetNdIndex(
   return;
 }
 
+bool Tensor::IsInBounds(absl::Span<const DimensionSize> indices) const {
+  if (indices.size() != Rank()) {
+    return false;
+  }
+  for (Axis dim = 0; dim < Rank(); ++dim) {
+    if (indices[dim] < 0 || indices[dim] >= shape().Dim(dim)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 DimensionSize Tensor::FlattenIndex(
-    absl::InlinedVector<Axis, kMaxNumDimensions>& indices) const {
+    absl::Span<const DimensionSize> indices) const {
+  // Incompatible indices and shape check while flattening index.
+  if (!IsInBounds(indices)) {
+    ABSL_CHECK(false);
+  }
   DimensionSize index = 0;
+  DimensionSize divisor = 1;
+  DimensionSize dim = 0;
+  Axis rank = Rank();
   if (shape().empty()) {
     return index;
   }
-  size_t rank = Rank();
-  absl::InlinedVector<Axis, kMaxNumDimensions> strides(rank);
-  strides[rank - 1] = 1;
-  for (int64_t i = static_cast<int64_t>(rank) - 2; i >= 0; --i) {
-    strides[i] = strides[i + 1] * shape()[i + 1];
-  }
-  for (size_t i = 0; i < indices.size(); ++i) {
-    index += strides[i] * indices[i];
+  for (int64_t i = static_cast<int64_t>(rank) - 1; i >= 0; --i) {
+    dim = shape().Dim(i);
+    index += divisor * indices[i];
+    divisor *= dim;
   }
   return index;
 }

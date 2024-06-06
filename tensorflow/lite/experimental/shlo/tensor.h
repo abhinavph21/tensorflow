@@ -68,7 +68,7 @@ struct Tensor {
   size_t Rank() const;
   DataType StorageType() const;
   DataType ExpressedType() const;
-
+  
   DimensionSize NumElements() const;
   size_t SizeInBytes() const;
 
@@ -106,23 +106,25 @@ struct Tensor {
 
   template <DataType storage_type,
             typename T = typename Storage<storage_type>::Type>
-  T Get(absl::InlinedVector<Axis, kMaxNumDimensions>& indices) const {
+  T Get(absl::Span<const DimensionSize> indices) const {
     return GetDataAs<storage_type>()[FlattenIndex(indices)];
   }
 
   template <DataType storage_type,
             typename T = typename Storage<storage_type>::Type>
-  void Set(absl::InlinedVector<Axis, kMaxNumDimensions>& indices, T& element) {
+  void Set(absl::Span<const DimensionSize> indices, T element) {
     T* tensor_data = GetDataAs<storage_type>();
     tensor_data[FlattenIndex(indices)] = element;
     return;
   }
 
-  DimensionSize FlattenIndex(
-      absl::InlinedVector<Axis, kMaxNumDimensions>& indices) const;
+  bool IsInBounds(absl::Span<const DimensionSize> indices) const;
 
-  void GetNdIndex(size_t index,
-                  absl::InlinedVector<Axis, kMaxNumDimensions>& indices) const;
+  DimensionSize FlattenIndex(absl::Span<const DimensionSize> indices) const;
+
+  void GetNdIndex(
+      DimensionSize index,
+      absl::InlinedVector<DimensionSize, kMaxNumDimensions>& indices) const;
 
   TensorTypeVariant type;
 

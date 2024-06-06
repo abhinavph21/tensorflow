@@ -9,7 +9,7 @@ namespace shlo_ref {
 class ReshapeOp {
  public:
   struct Attributes {};
-  Attributes attributes;
+  
 };
 
 ReshapeOp Create(ReshapeOp::Attributes);

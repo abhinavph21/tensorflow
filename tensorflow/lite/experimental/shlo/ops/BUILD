@@ -157,33 +157,33 @@ cc_library(
 cc_library(
     name = "reshape",
     srcs = ["reshape.cc"],
-    hdrs = ["reshape.h", "util.h"],
+    hdrs = ["reshape.h"],
     deps = [
         ":util",
+        ":unary_elementwise",
         "//tensorflow/lite/experimental/shlo:data_type",
+        "//tensorflow/lite/experimental/shlo:quantized_tensor_element_type",
         "//tensorflow/lite/experimental/shlo:dispatch",
+        "//tensorflow/lite/experimental/shlo:quantize",
         "//tensorflow/lite/experimental/shlo:shape",
         "//tensorflow/lite/experimental/shlo:tensor",
-        "//tensorflow/lite/experimental/shlo:quantize",
         "@com_google_absl//absl/status",
     ],
 )
 cc_test(
     name = "reshape_test",
     srcs = ["reshape_test.cc"],
+    linkopts = shlo_ref_linkopts(),
     deps = [
-        ":binary_elementwise_test_util",
         ":reshape",
         ":test_util",
         "//tensorflow/lite/experimental/shlo:data_type",
-        "//tensorflow/lite/experimental/shlo:quantize",
-        "//tensorflow/lite/experimental/shlo:quantized_tensor_element_type",
         "//tensorflow/lite/experimental/shlo:shape",
         "//tensorflow/lite/experimental/shlo:status_matcher",
         "//tensorflow/lite/experimental/shlo:tensor",
-        "@com_google_absl//absl/random",
-        "@com_google_absl//absl/random:distributions",
-        "@com_google_absl//absl/status",
+        "//tensorflow/lite/experimental/shlo:tensor_matcher",
+        "//tensorflow/lite/experimental/shlo:tensor_with_data",
+        "@com_google_absl//absl/types:span",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -202,6 +202,7 @@ cc_library(
         "@com_google_absl//absl/status",
     ],
 )
+
 cc_test(
     name = "transpose_test",
     srcs = ["transpose_test.cc"],
