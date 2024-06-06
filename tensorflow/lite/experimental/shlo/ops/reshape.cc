@@ -37,21 +37,12 @@ absl::Status ReshapeTensor(const Tensor& operand, Tensor& output) {
 
   StorageT* output_buffer = output.GetDataAs<storage_type>();
   const DimensionSize operand_size = operand.NumElements();
-  // const DimensionSize output_size = output.NumElements();
-
-  // const size_t operand_rank = operand.Rank();
-  // const size_t output_rank = output.Rank();
-
-  // absl::InlinedVector<DimensionSize, kMaxNumDimensions> operand_index;
-  // operand_index.resize(operand_rank);
-
-  // absl::InlinedVector<DimensionSize, kMaxNumDimensions> output_index;
-  // output_index.resize(output_rank);
 
   for (size_t k = 0; k < operand_size; ++k) {
     // operand.GetNdIndex(k, operand_index);
     // output.GetNdIndex(k, output_index);
-    // output_buffer[output.FlattenIndex(output_index)] = operand.GetDataAs<storage_type>(operand_index);
+    // output_buffer[output.FlattenIndex(output_index)] = operand.Get<storage_type>(operand_index);
+    
     output_buffer[k] = operand.GetDataAs<storage_type>()[k];
   }
 

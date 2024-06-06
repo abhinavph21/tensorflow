@@ -29,7 +29,7 @@ struct ParamName<ReshapeOp> {
 
         TYPED_TEST_SUITE(NonQuantizedIntReshapeTest, IntTestTypes, TestParamNames);
 
-        TYPED_TEST(NonQuantizedIntReshapeTest, IntTestTypesTensorrsWork1){
+        TYPED_TEST(NonQuantizedIntReshapeTest, IntTestTypesTensorsWork1){
             using StorageT = typename TypeParam::StorageT;
 
             const Shape shape_operand({2,3,2});
@@ -37,7 +37,7 @@ struct ParamName<ReshapeOp> {
 
             Vector<StorageT> operand_data = Vector<StorageT>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
-            Vector<StorageT> output_data = Vector<StorageT>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+            Vector<StorageT> output_data(shape_r.NumElements());
 
             Tensor operand{.type = TensorType{.shape = shape_operand,
                                               .element_type = TypeParam::kStorage},
@@ -53,7 +53,7 @@ struct ParamName<ReshapeOp> {
 
             ASSERT_OK(Prepare(op, operand, output_tensor));
 
-            // ASSERT_OK(Evaluate(op, operand, output_tensor));
+            ASSERT_OK(Evaluate(op, operand, output_tensor));
 
             EXPECT_THAT(output_data, expected_data);
 
