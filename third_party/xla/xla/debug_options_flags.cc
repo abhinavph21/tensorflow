@@ -126,7 +126,6 @@ DebugOptions DefaultDebugOptionsIgnoringFlags() {
   opts.set_xla_gpu_reduce_scatter_combine_threshold_bytes(kDefaultThreshold);
   opts.set_xla_gpu_enable_all_gather_combine_by_dim(true);
   opts.set_xla_gpu_enable_reduce_scatter_combine_by_dim(true);
-  opts.set_xla_gpu_all_reduce_contiguous(true);
   opts.set_xla_gpu_enable_all_reduce_splitter(false);
 
   opts.set_xla_gpu_enable_reassociation_for_converted_ar(true);
@@ -234,7 +233,7 @@ DebugOptions DefaultDebugOptionsIgnoringFlags() {
   opts.set_xla_gpu_nccl_collective_max_nchannels(0);
   opts.set_xla_gpu_nccl_p2p_max_nchannels(0);
 
-  opts.set_xla_gpu_enable_mlir_emitters(false);
+  opts.set_xla_gpu_mlir_emitter_level(0);
   opts.set_xla_gpu_max_mlir_kernels(0);
   opts.set_xla_gpu_skip_mlir_kernels(0);
 
@@ -255,6 +254,10 @@ DebugOptions DefaultDebugOptionsIgnoringFlags() {
   opts.set_xla_gpu_require_complete_aot_autotune_results(false);
 
   opts.set_xla_gpu_enable_host_memory_offloading(false);
+
+  opts.set_xla_gpu_nccl_terminate_on_error(false);
+
+  opts.set_xla_use_shardonnay(false);
 
   return opts;
 }
@@ -1067,11 +1070,6 @@ void MakeDebugOptionsFlags(std::vector<tsl::Flag>* flag_list,
       "Combine reduce-scatter ops with the same dimension or irrespective of "
       "their dimension."));
   flag_list->push_back(tsl::Flag(
-      "xla_gpu_all_reduce_contiguous",
-      bool_setter_for(&DebugOptions::set_xla_gpu_all_reduce_contiguous),
-      debug_options->xla_gpu_all_reduce_contiguous(),
-      "Combine all-reduces into a single operation over a contiguous buffer."));
-  flag_list->push_back(tsl::Flag(
       "xla_gpu_enable_all_reduce_splitter",
       bool_setter_for(&DebugOptions::set_xla_gpu_enable_all_reduce_splitter),
       debug_options->xla_gpu_enable_all_reduce_splitter(),
@@ -1648,11 +1646,12 @@ void MakeDebugOptionsFlags(std::vector<tsl::Flag>* flag_list,
       "Specify the maximum number of channels(SMs) NCCL will use "
       "for p2p operations. Default is 0 which is to let "
       "NCCL decide."));
-  flag_list->push_back(tsl::Flag(
-      "xla_gpu_enable_mlir_emitters",
-      bool_setter_for(&DebugOptions::set_xla_gpu_enable_mlir_emitters),
-      debug_options->xla_gpu_enable_mlir_emitters(),
-      "Enable new MLIR-based emitters."));
+  flag_list->push_back(
+      tsl::Flag("xla_gpu_mlir_emitter_level",
+                int64_setter_for(&DebugOptions::set_xla_gpu_mlir_emitter_level),
+                debug_options->xla_gpu_mlir_emitter_level(),
+                "Enable new MLIR-based emitters. Level 0 means disabled, "
+                "higher levels enable more of the emitters."));
   flag_list->push_back(
       tsl::Flag("xla_gpu_max_mlir_kernels",
                 int64_setter_for(&DebugOptions::set_xla_gpu_max_mlir_kernels),
@@ -1698,6 +1697,15 @@ void MakeDebugOptionsFlags(std::vector<tsl::Flag>* flag_list,
       bool_setter_for(&DebugOptions::set_xla_gpu_enable_host_memory_offloading),
       debug_options->xla_gpu_enable_host_memory_offloading(),
       "Whether to trigger host memory offloading on a device."));
+  flag_list->push_back(tsl::Flag(
+      "xla_gpu_nccl_terminate_on_error",
+      bool_setter_for(&DebugOptions::set_xla_gpu_nccl_terminate_on_error),
+      debug_options->xla_gpu_nccl_terminate_on_error(),
+      "If set, then NCCL errors will terminate the process."));
+  flag_list->push_back(tsl::Flag(
+      "xla_use_shardonnay",
+      bool_setter_for(&DebugOptions::set_xla_use_shardonnay),
+      debug_options->xla_use_shardonnay(), "Whether to use Shardonnay."));
 }  // NOLINT(readability/fn_size)
 
 // Allocates flag_values and flag_objects; this function must not be called more

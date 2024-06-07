@@ -25,8 +25,10 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
+#include "absl/container/inlined_vector.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "xla/runtime/buffer_use.h"
 #include "xla/service/cpu/runtime/buffer_allocations.h"
 #include "xla/service/cpu/xfeed_manager.h"
 #include "xla/stream_executor/host/host_kernel_c_api.h"
@@ -52,8 +54,10 @@ class Thunk {
   enum class Kind {
     kCall,
     kCopy,
+    kConditional,
     kInfeed,
     kKernel,
+    kOutfeed,
     kRngGetAndUpdateState,
     kWhile,
   };
@@ -75,6 +79,11 @@ class Thunk {
   const Info& info() const { return info_; }
 
   static std::string_view KindToString(Kind kind);
+
+  // Returns the list of buffers used by a thunk. Thunk executor relies on this
+  // information to execute thunks concurrently and to avoid data races.
+  using BufferUses = absl::InlinedVector<BufferUse, 4>;
+  virtual BufferUses buffer_uses() const = 0;
 
   //===--------------------------------------------------------------------===//
   // HostKernels
@@ -132,6 +141,9 @@ class ThunkSequence : public std::vector<std::unique_ptr<Thunk>> {
   static ThunkSequence Empty() { return ThunkSequence(); }
 
   absl::Status Execute(const Thunk::ExecuteParams& params);
+
+  using BufferUses = Thunk::BufferUses;
+  BufferUses buffer_uses() const;
 
   void Append(ThunkSequence other);
 };
