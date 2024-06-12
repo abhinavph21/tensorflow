@@ -160,6 +160,45 @@ constexpr const char* ToString(DataType t) {
   return "Unknown data type";
 }
 
+
+
+
+using VariantDataType =
+    std::variant<StorageType<DataType::kI1>, StorageType<DataType::kSI4>,
+                 StorageType<DataType::kSI8>, StorageType<DataType::kSI16>,
+                 StorageType<DataType::kSI32>, StorageType<DataType::kSI64>,
+                 StorageType<DataType::kBF16>, StorageType<DataType::kF16>,
+                 StorageType<DataType::kF32>>;
+
+VariantDataType CreateVariable(DataType data_type) {
+  switch (data_type) {
+    case DataType::kI1:
+      return StorageType<DataType::kI1>{};
+    case DataType::kSI4:
+      return StorageType<DataType::kSI4>{};
+    case DataType::kSI8:
+      return StorageType<DataType::kSI8>{};
+    case DataType::kSI16:
+      return StorageType<DataType::kSI16>{};
+    case DataType::kSI32:
+      return StorageType<DataType::kSI32>{};
+    case DataType::kSI64:
+      return StorageType<DataType::kSI64>{};
+    case DataType::kBF16:
+      return StorageType<DataType::kBF16>{};
+    case DataType::kF16:
+      return StorageType<DataType::kF16>{};
+    case DataType::kF32:
+      return StorageType<DataType::kF32>{};
+  }
+  throw std::invalid_argument("Unknown data type");
+}
+
+template <typename From, DataType ToDataType>
+StorageType<ToDataType> CastToDataType(From value) {
+  return static_cast<StorageType<ToDataType>>(value);
+}
+
 }  // namespace shlo_ref
 
 #endif  // TENSORFLOW_LITE_EXPERIMENTAL_SHLO_DATA_TYPE_H_

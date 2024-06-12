@@ -14,9 +14,9 @@ class ReshapeOp {
 
 ReshapeOp Create(ReshapeOp::Attributes);
 
-absl::Status Prepare(ReshapeOp& op, const Tensor& operand, Tensor& result);
+absl::Status Prepare(ReshapeOp& op, const Tensor& operand, Tensor& output);
 
-absl::Status Evaluate(ReshapeOp& op, const Tensor& operand, Tensor& result);
+absl::Status Evaluate(ReshapeOp& op, const Tensor& operand, Tensor& output);
 
 }  // namespace shlo_ref
 
