@@ -624,7 +624,7 @@ union BuiltinOptions2{
   StablehloReduceWindowOptions,
   StablehloSortOptions,
   StablehloWhileOptions,
-  StablehloGatherOptions,
+  StablehloReshapeOptions,
   StablehloTransposeOptions,
   DilateOptions,
   StablehloRngBitGeneratorOptions,
@@ -639,6 +639,9 @@ table StablehloGatherOptions{
   index_vector_dim : long;
   slice_sizes : [long];
   indices_are_sorted : bool;
+}
+
+table StablehloReshapeOptions{
 }
 
 table StablehloTransposeOptions{

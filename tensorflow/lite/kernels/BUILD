@@ -765,6 +765,7 @@ BUILTIN_KERNEL_SRCS = [
     "select.cc",
     "shape.cc",
     "stablehlo_gather.cc",
+    "stablehlo_reshape.cc",
     "stablehlo_add.cc",
     "stablehlo_composite.cc",
     "stablehlo_multiply.cc",
@@ -888,6 +889,7 @@ cc_library(
         "@fft2d",
         "@ruy//ruy/profiler:instrumentation",
         "//tensorflow/lite/c:c_api_types",
+        "//tensorflow/lite/kernels/internal:tensor_ctypes",
         "//tensorflow/lite/c:common",
         "//tensorflow/lite:array",
         "//tensorflow/lite:builtin_ops",
@@ -3210,6 +3212,20 @@ cc_test(
     name = "stablehlo_gather_test",
     size = "small",
     srcs = ["stablehlo_gather_test.cc"],
+    deps = [
+        ":test_main",
+        ":test_util",
+        "//tensorflow/lite/c:c_api_types",
+        "//tensorflow/lite/core/c:common",
+        "//tensorflow/lite/schema:schema_fbs",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+cc_test(
+    name = "stablehlo_reshape_test",
+    size = "small",
+    srcs = ["stablehlo_reshape_test.cc"],
     deps = [
         ":test_main",
         ":test_util",

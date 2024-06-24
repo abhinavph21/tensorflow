@@ -775,6 +775,8 @@ class SingleOpModel {
   std::vector<flatbuffers::Offset<Operator>> operators_;
   std::map<string, std::function<TfLiteRegistration*()>> custom_registrations_;
 
+
+
   template <typename T>
   int AddTensor(TensorData t, const T* data, size_t size,
                 bool is_variable = false) {
@@ -950,6 +952,7 @@ class SingleOpModel {
     tensor_ptr->bytes = ((ElementCount(*tensor_ptr->dims) + 1) / 2);
   }
 
+
  private:
   // Populates the tensor starting at offset using given data.
   template <typename T, typename Container>
@@ -967,6 +970,8 @@ class SingleOpModel {
     }
     absl::c_copy(data, v + offset);
   }
+
+
 
   void PackInt4ValuesDenselyInPlace(uint8_t* src_buffer, int buffer_size) {
     for (int i = 0; i < buffer_size; ++i) {

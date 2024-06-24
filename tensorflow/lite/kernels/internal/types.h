@@ -158,6 +158,7 @@ struct PerChannelQuantizationParams {
 
 // Gets next index to iterate through a multidimensional array.
 template <typename IndexType = int>
+// curent = index in particular dim
 inline bool NextIndex(const int num_dims, const int* dims, IndexType* current) {
   if (num_dims == 0) {
     return false;

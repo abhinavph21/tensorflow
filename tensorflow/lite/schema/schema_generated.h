@@ -1438,7 +1438,7 @@ inline const BuiltinOperator (&EnumValuesBuiltinOperator())[207] {
 }
 
 inline const char * const *EnumNamesBuiltinOperator() {
-  static const char * const names[208] = {
+  static const char * const names[209] = {
     "ADD",
     "AVERAGE_POOL_2D",
     "CONCATENATION",
@@ -1641,6 +1641,7 @@ inline const char * const *EnumNamesBuiltinOperator() {
     "STABLEHLO_SORT",
     "STABLEHLO_WHILE",
     "STABLEHLO_GATHER",
+    "STABLEHLO_RESHAPE",
     "STABLEHLO_TRANSPOSE",
     "DILATE",
     "STABLEHLO_RNG_BIT_GENERATOR",
@@ -6060,6 +6061,8 @@ struct StablehloGatherOptionsBuilder {
     return o;
   }
 };
+
+
 
 inline ::flatbuffers::Offset<StablehloGatherOptions> CreateStablehloGatherOptions(
     ::flatbuffers::FlatBufferBuilder &_fbb,

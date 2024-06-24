@@ -21,7 +21,7 @@ limitations under the License.
 #include <memory>
 
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
-#include "flatbuffers/vector.h"  // from @flatbuffers
+#include "flatbuffers/vector.h"       // from @flatbuffers
 #include "tensorflow/lite/core/api/error_reporter.h"
 #include "tensorflow/lite/core/c/builtin_op_data.h"
 #include "tensorflow/lite/core/c/common.h"
@@ -882,6 +882,9 @@ TfLiteStatus ParseOpDataTfLite(const Operator* op, BuiltinOperator op_type,
     case BuiltinOperator_STABLEHLO_GATHER: {
       return ParseStablehloGather(op, error_reporter, allocator, builtin_data);
     }
+    case BuiltinOperator_STABLEHLO_RESHAPE: {
+      return ParseStablehloReshape(op, error_reporter, allocator, builtin_data);
+    }
     case BuiltinOperator_STABLEHLO_REDUCE_WINDOW: {
       return ParseStablehloReduceWindow(op, error_reporter, allocator,
                                         builtin_data);
@@ -934,7 +937,6 @@ TfLiteStatus ParseOpDataTfLite(const Operator* op, BuiltinOperator op_type,
     case BuiltinOperator_STABLEHLO_DIVIDE:
     case BuiltinOperator_STABLEHLO_MULTIPLY:
     case BuiltinOperator_STABLEHLO_MAXIMUM:
-    case BuiltinOperator_STABLEHLO_RESHAPE:
     case BuiltinOperator_STABLEHLO_CLAMP:
     case BuiltinOperator_STABLEHLO_CONCATENATE:
     case BuiltinOperator_STABLEHLO_CUSTOM_CALL:
@@ -2276,6 +2278,17 @@ TfLiteStatus ParseStablehloRngBitGenerator(const Operator* op,
   return kTfLiteOk;
 }
 
+TfLiteStatus ParseStablehloReshape(const Operator* op,
+                                   ErrorReporter* error_reporter,
+                                   BuiltinDataAllocator* allocator,
+                                   void** builtin_data) {
+  CheckParsePointerParams(op, error_reporter, allocator, builtin_data);
+
+  SafeBuiltinDataAllocator safe_allocator(allocator);
+
+  return kTfLiteOk;
+}
+
 TfLiteStatus ParseStablehloGather(const Operator* op,
                                   ErrorReporter* error_reporter,
                                   BuiltinDataAllocator* allocator,
@@ -2286,6 +2299,7 @@ TfLiteStatus ParseStablehloGather(const Operator* op,
   std::unique_ptr<TfLiteStablehloGatherParams,
                   SafeBuiltinDataAllocator::BuiltinDataDeleter>
       params = safe_allocator.Allocate<TfLiteStablehloGatherParams>();
+
   TF_LITE_ENSURE(error_reporter, params != nullptr);
 
   const StablehloGatherOptions* schema_params =
