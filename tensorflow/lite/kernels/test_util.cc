@@ -81,22 +81,16 @@ std::vector<Matcher<std::complex<float>>> ArrayComplex64Near(
   return matchers;
 }
 
-
-
-
 int SingleOpModel::AddInput(const TensorData& t) {
   int id = 0;
   if (t.per_channel_quantization) {
     id = AddTensorPerChannelQuant(t);
-  } 
-  else {
+  } else {
     id = AddTensor<float>(t, nullptr, 0);
   }
   inputs_.push_back(id);
   return id;
 }
-
-
 
 int SingleOpModel::AddVariableInput(const TensorData& t) {
   int id = 0;
@@ -184,13 +178,9 @@ void SingleOpModel::SetCustomOp(
       CustomOptionsFormat_FLEXBUFFERS));
 }
 
-
-
 void SingleOpModel::AllocateAndDelegate(bool apply_delegate) {
-
   CHECK(interpreter_->AllocateTensors() == kTfLiteOk)
       << "Cannot allocate tensors";
-
   interpreter_->ResetVariableTensors();
 
   // In some rare cases a test may need to postpone modifying the graph with

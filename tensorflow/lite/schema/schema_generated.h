@@ -4124,16 +4124,17 @@ enum BuiltinOptions2 : uint8_t {
   BuiltinOptions2_StablehloReduceWindowOptions = 13,
   BuiltinOptions2_StablehloSortOptions = 14,
   BuiltinOptions2_StablehloWhileOptions = 15,
-  BuiltinOptions2_StablehloTransposeOptions = 16,
-  BuiltinOptions2_DilateOptions = 17,
-  BuiltinOptions2_StablehloRngBitGeneratorOptions = 18,
-  BuiltinOptions2_ReduceWindowOptions = 19,
-  BuiltinOptions2_StableHLOCompositeOptions = 20,
+  BuiltinOptions2_StablehloGatherOptions = 16,
+  BuiltinOptions2_StablehloTransposeOptions = 17,
+  BuiltinOptions2_DilateOptions = 18,
+  BuiltinOptions2_StablehloRngBitGeneratorOptions = 19,
+  BuiltinOptions2_ReduceWindowOptions = 20,
+  BuiltinOptions2_StableHLOCompositeOptions = 21,
   BuiltinOptions2_MIN = BuiltinOptions2_NONE,
   BuiltinOptions2_MAX = BuiltinOptions2_StableHLOCompositeOptions
 };
 
-inline const BuiltinOptions2 (&EnumValuesBuiltinOptions2())[21] {
+inline const BuiltinOptions2 (&EnumValuesBuiltinOptions2())[22] {
   static const BuiltinOptions2 values[] = {
     BuiltinOptions2_NONE,
     BuiltinOptions2_StablehloConcatenateOptions,
@@ -4151,6 +4152,7 @@ inline const BuiltinOptions2 (&EnumValuesBuiltinOptions2())[21] {
     BuiltinOptions2_StablehloReduceWindowOptions,
     BuiltinOptions2_StablehloSortOptions,
     BuiltinOptions2_StablehloWhileOptions,
+    BuiltinOptions2_StablehloGatherOptions,
     BuiltinOptions2_StablehloTransposeOptions,
     BuiltinOptions2_DilateOptions,
     BuiltinOptions2_StablehloRngBitGeneratorOptions,
@@ -4161,7 +4163,7 @@ inline const BuiltinOptions2 (&EnumValuesBuiltinOptions2())[21] {
 }
 
 inline const char * const *EnumNamesBuiltinOptions2() {
-  static const char * const names[22] = {
+  static const char * const names[23] = {
     "NONE",
     "StablehloConcatenateOptions",
     "StablehloBroadcastInDimOptions",
@@ -4178,6 +4180,7 @@ inline const char * const *EnumNamesBuiltinOptions2() {
     "StablehloReduceWindowOptions",
     "StablehloSortOptions",
     "StablehloWhileOptions",
+    "StablehloGatherOptions",
     "StablehloTransposeOptions",
     "DilateOptions",
     "StablehloRngBitGeneratorOptions",
@@ -4256,6 +4259,10 @@ template<> struct BuiltinOptions2Traits<tflite::StablehloSortOptions> {
 
 template<> struct BuiltinOptions2Traits<tflite::StablehloWhileOptions> {
   static const BuiltinOptions2 enum_value = BuiltinOptions2_StablehloWhileOptions;
+};
+
+template<> struct BuiltinOptions2Traits<tflite::StablehloGatherOptions> {
+  static const BuiltinOptions2 enum_value = BuiltinOptions2_StablehloGatherOptions;
 };
 
 template<> struct BuiltinOptions2Traits<tflite::StablehloTransposeOptions> {
@@ -4340,6 +4347,10 @@ template<> struct BuiltinOptions2UnionTraits<tflite::StablehloSortOptionsT> {
 
 template<> struct BuiltinOptions2UnionTraits<tflite::StablehloWhileOptionsT> {
   static const BuiltinOptions2 enum_value = BuiltinOptions2_StablehloWhileOptions;
+};
+
+template<> struct BuiltinOptions2UnionTraits<tflite::StablehloGatherOptionsT> {
+  static const BuiltinOptions2 enum_value = BuiltinOptions2_StablehloGatherOptions;
 };
 
 template<> struct BuiltinOptions2UnionTraits<tflite::StablehloTransposeOptionsT> {
@@ -4511,6 +4522,14 @@ struct BuiltinOptions2Union {
   const tflite::StablehloWhileOptionsT *AsStablehloWhileOptions() const {
     return type == BuiltinOptions2_StablehloWhileOptions ?
       reinterpret_cast<const tflite::StablehloWhileOptionsT *>(value) : nullptr;
+  }
+  tflite::StablehloGatherOptionsT *AsStablehloGatherOptions() {
+    return type == BuiltinOptions2_StablehloGatherOptions ?
+      reinterpret_cast<tflite::StablehloGatherOptionsT *>(value) : nullptr;
+  }
+  const tflite::StablehloGatherOptionsT *AsStablehloGatherOptions() const {
+    return type == BuiltinOptions2_StablehloGatherOptions ?
+      reinterpret_cast<const tflite::StablehloGatherOptionsT *>(value) : nullptr;
   }
   tflite::StablehloTransposeOptionsT *AsStablehloTransposeOptions() {
     return type == BuiltinOptions2_StablehloTransposeOptions ?
@@ -15218,6 +15237,9 @@ struct Operator FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const tflite::StablehloWhileOptions *builtin_options_2_as_StablehloWhileOptions() const {
     return builtin_options_2_type() == tflite::BuiltinOptions2_StablehloWhileOptions ? static_cast<const tflite::StablehloWhileOptions *>(builtin_options_2()) : nullptr;
   }
+  const tflite::StablehloGatherOptions *builtin_options_2_as_StablehloGatherOptions() const {
+    return builtin_options_2_type() == tflite::BuiltinOptions2_StablehloGatherOptions ? static_cast<const tflite::StablehloGatherOptions *>(builtin_options_2()) : nullptr;
+  }
   const tflite::StablehloTransposeOptions *builtin_options_2_as_StablehloTransposeOptions() const {
     return builtin_options_2_type() == tflite::BuiltinOptions2_StablehloTransposeOptions ? static_cast<const tflite::StablehloTransposeOptions *>(builtin_options_2()) : nullptr;
   }
@@ -15824,6 +15846,10 @@ template<> inline const tflite::StablehloSortOptions *Operator::builtin_options_
 
 template<> inline const tflite::StablehloWhileOptions *Operator::builtin_options_2_as<tflite::StablehloWhileOptions>() const {
   return builtin_options_2_as_StablehloWhileOptions();
+}
+
+template<> inline const tflite::StablehloGatherOptions *Operator::builtin_options_2_as<tflite::StablehloGatherOptions>() const {
+  return builtin_options_2_as_StablehloGatherOptions();
 }
 
 template<> inline const tflite::StablehloTransposeOptions *Operator::builtin_options_2_as<tflite::StablehloTransposeOptions>() const {
@@ -24338,6 +24364,10 @@ inline bool VerifyBuiltinOptions2(::flatbuffers::Verifier &verifier, const void 
       auto ptr = reinterpret_cast<const tflite::StablehloWhileOptions *>(obj);
       return verifier.VerifyTable(ptr);
     }
+    case BuiltinOptions2_StablehloGatherOptions: {
+      auto ptr = reinterpret_cast<const tflite::StablehloGatherOptions *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
     case BuiltinOptions2_StablehloTransposeOptions: {
       auto ptr = reinterpret_cast<const tflite::StablehloTransposeOptions *>(obj);
       return verifier.VerifyTable(ptr);
@@ -24437,6 +24467,10 @@ inline void *BuiltinOptions2Union::UnPack(const void *obj, BuiltinOptions2 type,
       auto ptr = reinterpret_cast<const tflite::StablehloWhileOptions *>(obj);
       return ptr->UnPack(resolver);
     }
+    case BuiltinOptions2_StablehloGatherOptions: {
+      auto ptr = reinterpret_cast<const tflite::StablehloGatherOptions *>(obj);
+      return ptr->UnPack(resolver);
+    }
     case BuiltinOptions2_StablehloTransposeOptions: {
       auto ptr = reinterpret_cast<const tflite::StablehloTransposeOptions *>(obj);
       return ptr->UnPack(resolver);
@@ -24524,6 +24558,10 @@ inline ::flatbuffers::Offset<void> BuiltinOptions2Union::Pack(::flatbuffers::Fla
       auto ptr = reinterpret_cast<const tflite::StablehloWhileOptionsT *>(value);
       return CreateStablehloWhileOptions(_fbb, ptr, _rehasher).Union();
     }
+    case BuiltinOptions2_StablehloGatherOptions: {
+      auto ptr = reinterpret_cast<const tflite::StablehloGatherOptionsT *>(value);
+      return CreateStablehloGatherOptions(_fbb, ptr, _rehasher).Union();
+    }
     case BuiltinOptions2_StablehloTransposeOptions: {
       auto ptr = reinterpret_cast<const tflite::StablehloTransposeOptionsT *>(value);
       return CreateStablehloTransposeOptions(_fbb, ptr, _rehasher).Union();
@@ -24608,6 +24646,10 @@ inline BuiltinOptions2Union::BuiltinOptions2Union(const BuiltinOptions2Union &u)
     }
     case BuiltinOptions2_StablehloWhileOptions: {
       value = new tflite::StablehloWhileOptionsT(*reinterpret_cast<tflite::StablehloWhileOptionsT *>(u.value));
+      break;
+    }
+    case BuiltinOptions2_StablehloGatherOptions: {
+      value = new tflite::StablehloGatherOptionsT(*reinterpret_cast<tflite::StablehloGatherOptionsT *>(u.value));
       break;
     }
     case BuiltinOptions2_StablehloTransposeOptions: {
@@ -24709,6 +24751,11 @@ inline void BuiltinOptions2Union::Reset() {
     }
     case BuiltinOptions2_StablehloWhileOptions: {
       auto ptr = reinterpret_cast<tflite::StablehloWhileOptionsT *>(value);
+      delete ptr;
+      break;
+    }
+    case BuiltinOptions2_StablehloGatherOptions: {
+      auto ptr = reinterpret_cast<tflite::StablehloGatherOptionsT *>(value);
       delete ptr;
       break;
     }

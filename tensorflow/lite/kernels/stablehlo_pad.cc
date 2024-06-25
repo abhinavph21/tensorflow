@@ -202,9 +202,6 @@ class PadData {
     }
   }
 
-
-
-
   void Apply(const char* input, const char* padding_value, char* output) const {
     // Fill the output tensor with the padding value.
     FillBuffer(output, output_size_, padding_value, element_size_);
@@ -212,8 +209,6 @@ class PadData {
                 output + output_offset_, output_strides_, element_size_,
                 /*depth=*/0);
   }
-
-
 
   TfLiteIntArray* BuildOuputTensorDims() const {
     TfLiteIntArray* dims = TfLiteIntArrayCreate(rank_);
@@ -248,12 +243,6 @@ void Free(TfLiteContext* context, void* node_data) {
   delete reinterpret_cast<PadData*>(node_data);
 }
 
-
-
-
-
-
-
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   // Input checks.
   const TfLiteTensor* input_tensor = GetInput(context, node, PadData::kInput);
@@ -274,13 +263,6 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
                         pad_data.BuildOuputTensorDims());
   return kTfLiteOk;
 }
-
-
-
-
-
-
-
 
 TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   const TfLiteTensor* input_tensor = GetInput(context, node, PadData::kInput);

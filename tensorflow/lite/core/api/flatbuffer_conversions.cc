@@ -21,7 +21,7 @@ limitations under the License.
 #include <memory>
 
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
-#include "flatbuffers/vector.h"       // from @flatbuffers
+#include "flatbuffers/vector.h"  // from @flatbuffers
 #include "tensorflow/lite/core/api/error_reporter.h"
 #include "tensorflow/lite/core/c/builtin_op_data.h"
 #include "tensorflow/lite/core/c/common.h"
@@ -2299,7 +2299,6 @@ TfLiteStatus ParseStablehloGather(const Operator* op,
   std::unique_ptr<TfLiteStablehloGatherParams,
                   SafeBuiltinDataAllocator::BuiltinDataDeleter>
       params = safe_allocator.Allocate<TfLiteStablehloGatherParams>();
-
   TF_LITE_ENSURE(error_reporter, params != nullptr);
 
   const StablehloGatherOptions* schema_params =

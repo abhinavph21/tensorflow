@@ -64,7 +64,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
 
 
 
-template <typename IndexType, typename DataType>
+template <typename DataType>
 TfLiteStatus EvalWithTypes(TfLiteContext* context, TfLiteNode* node) {
   //  2 for param, operand
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 1);
@@ -83,23 +83,23 @@ TfLiteStatus EvalWithTypes(TfLiteContext* context, TfLiteNode* node) {
 
   RuntimeShape operand_shape = GetTensorShape(operand);
 
-  Index<IndexType> operand_index = Index<IndexType>(operand_rank, 0);
+  Index<int64_t> operand_index = Index<int64_t>(operand_rank, 0);
 
   int result_rank = output->dims->size;
 
   RuntimeShape result_runtime_shape(result_rank, output->dims->data);
 
-  Index<IndexType> result_index = Index<IndexType>(result_rank, 0);
+  Index<int64_t> result_index = Index<int64_t>(result_rank, 0);
 
   do {
     const DataType* operand_data = GetTensorData<DataType>(operand);
 
-    IndexType flat_operand_index = TensorIndexToFlat(
+    int64_t flat_operand_index = TensorIndexToFlat(
         operand_index.data(), operand_index.size(), GetTensorShape(operand));
 
     DataType* result_data = GetTensorData<DataType>(output);
 
-    IndexType flat_result_index = TensorIndexToFlat(
+    int64_t flat_result_index = TensorIndexToFlat(
         result_index.data(), result_index.size(), GetTensorShape(output));
 
     result_data[flat_result_index] = operand_data[flat_operand_index];
@@ -113,44 +113,6 @@ TfLiteStatus EvalWithTypes(TfLiteContext* context, TfLiteNode* node) {
 }
 
 
-
-template <typename IndexType>
-TfLiteStatus EvalWithIndexType(TfLiteContext* context, TfLiteNode* node,
-                               TfLiteType data_type) {
-  switch (data_type) {
-    
-    case kTfLiteFloat16:
-      return EvalWithTypes<IndexType, Eigen::half>(context, node);
-    case kTfLiteFloat32:
-      return EvalWithTypes<IndexType, float>(context, node);
-    case kTfLiteFloat64:
-      return EvalWithTypes<IndexType, double>(context, node);
-    case kTfLiteInt8:
-      return EvalWithTypes<IndexType, int8_t>(context, node);
-    case kTfLiteInt16:
-      return EvalWithTypes<IndexType, int16_t>(context, node);
-    case kTfLiteInt32:
-      return EvalWithTypes<IndexType, int32_t>(context, node);
-    case kTfLiteInt64:
-      return EvalWithTypes<IndexType, int64_t>(context, node);
-    case kTfLiteUInt8:
-      return EvalWithTypes<IndexType, uint8_t>(context, node);
-    case kTfLiteUInt16:
-      return EvalWithTypes<IndexType, uint16_t>(context, node);
-    case kTfLiteUInt32:
-      return EvalWithTypes<IndexType, uint32_t>(context, node);
-    case kTfLiteUInt64:
-      return EvalWithTypes<IndexType, uint64_t>(context, node);
-    default:
-    //   TF_LITE_KERNEL_LOG(
-    //       context, "(Index Type: %s, Data Type: %s) currently not supported.\n",
-    //       IndexType, TfLiteTypeGetName(data_type));
-      return TfLiteStatus::kTfLiteError;
-  }
-}
-
-
-
 TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
   const TfLiteTensor* operand;
@@ -159,8 +121,35 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
   TfLiteType data_type = operand->type;
 
-  return EvalWithIndexType<int32_t>(context, node, data_type);
-
+  switch (data_type) {
+    case kTfLiteFloat16:
+      return EvalWithTypes<Eigen::half>(context, node);
+    case kTfLiteFloat32:
+      return EvalWithTypes<float>(context, node);
+    case kTfLiteFloat64:
+      return EvalWithTypes<double>(context, node);
+    case kTfLiteInt8:
+      return EvalWithTypes<int8_t>(context, node);
+    case kTfLiteInt16:
+      return EvalWithTypes<int16_t>(context, node);
+    case kTfLiteInt32:
+      return EvalWithTypes<int32_t>(context, node);
+    case kTfLiteInt64:
+      return EvalWithTypes<int64_t>(context, node);
+    case kTfLiteUInt8:
+      return EvalWithTypes<uint8_t>(context, node);
+    case kTfLiteUInt16:
+      return EvalWithTypes<uint16_t>(context, node);
+    case kTfLiteUInt32:
+      return EvalWithTypes<uint32_t>(context, node);
+    case kTfLiteUInt64:
+      return EvalWithTypes<uint64_t>(context, node);
+    default:
+    //   TF_LITE_KERNEL_LOG(
+    //       context, "(Index Type: %s, Data Type: %s) currently not supported.\n",
+    //       TfLiteTypeGetName(data_type));
+      return TfLiteStatus::kTfLiteError;
+  }
 }
 
 }  // namespace

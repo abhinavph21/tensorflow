@@ -36,12 +36,9 @@ class StablehloGatherOpModel : public SingleOpModel {
     input_ = AddInput(input);
     indices_ = AddInput(indices);
     output_ = AddOutput(TensorData(input.type, {2, 3, 2, 2}));
-
     SetBuiltinOp(
         BuiltinOperator_STABLEHLO_GATHER,
-
         BuiltinOptions2_StablehloGatherOptions,
-        
         CreateStablehloGatherOptions(
             builder_,
             builder_.CreateVector(
@@ -59,9 +56,7 @@ class StablehloGatherOpModel : public SingleOpModel {
                             params.slice_sizes + params.num_slice_sizes)),
             params.indices_are_sorted)
             .Union());
-
     BuildInterpreter({GetShape(input_), GetShape(indices_)});
-
   }
 
   template <typename T>
