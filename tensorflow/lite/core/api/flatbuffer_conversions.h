@@ -437,8 +437,10 @@ TfLiteStatus ParseStablehloGather(const Operator* op,
                                   BuiltinDataAllocator* allocator,
                                   void** builtin_data);
 
-
-
+TfLiteStatus ParseStablehloReshape(const Operator* op,
+                                  ErrorReporter* error_reporter,
+                                  BuiltinDataAllocator* allocator,
+                                  void** builtin_data);
 
 TfLiteStatus ParseStablehloReduceWindow(const Operator* op,
                                         ErrorReporter* error_reporter,
