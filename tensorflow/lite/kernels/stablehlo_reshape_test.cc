@@ -18,7 +18,7 @@ class StablehloReshapeOpModel : public SingleOpModel {
 
     std :: cout << "input done" << std::endl;
 
-    output_ = AddOutput(TensorData(input.type, {2, 3, 2, 2}));
+    output_ = AddOutput(TensorData(input.type, {4, 3, 2}));
     
     // :: flatbuffers::Offset<StablehloReshapeOptions> reshape_options;
 
@@ -30,7 +30,11 @@ class StablehloReshapeOpModel : public SingleOpModel {
         BuiltinOptions2_NONE,
         reshape_options.Union()
         );
-    BuildInterpreter({GetShape(input_)});
+
+    BuildInterpreter({GetShape(input_)}, /*num_threads=*/-1, /*allow_fp32_relax_to_fp16=*/false,
+        /*apply_delegate=*/false, /*allocate_and_delegate=*/true,
+        /*use_simple_allocator=*/false);
+
   }
 
   template <typename T>
