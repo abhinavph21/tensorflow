@@ -246,16 +246,16 @@ void Free(TfLiteContext* context, void* node_data) {
 TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   // Input checks.
   const TfLiteTensor* input_tensor = GetInput(context, node, PadData::kInput);
-  const TfLiteTensor* padding_value_tensor = GetInput(context, node, PadData::kPaddingValue);
+  const TfLiteTensor* padding_value_tensor =
+      GetInput(context, node, PadData::kPaddingValue);
   TF_LITE_ENSURE(context, input_tensor->type == padding_value_tensor->type);
   // PadData computations.
   size_t element_size;
-
-  TF_LITE_ENSURE(context, GetSizeOfType(context, input_tensor->type, &element_size) == kTfLiteOk);
-
+  TF_LITE_ENSURE(context, GetSizeOfType(context, input_tensor->type,
+                                        &element_size) == kTfLiteOk);
   PadData& pad_data = *reinterpret_cast<PadData*>(node->user_data);
-
-  pad_data.Setup(input_tensor->dims->data, input_tensor->dims->size, element_size);
+  pad_data.Setup(input_tensor->dims->data, input_tensor->dims->size,
+                 element_size);
   // Output tensor setup.
   TfLiteTensor* output_tensor = GetOutput(context, node, PadData::kOutput);
   TF_LITE_ENSURE(context, input_tensor->type == output_tensor->type);
