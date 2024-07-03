@@ -21,6 +21,7 @@ limitations under the License.
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <Eigen/Core>
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/kernels/test_util.h"
 #include "tensorflow/lite/schema/schema_generated.h"
@@ -151,6 +152,29 @@ TEST(ConcatenationOpTest, FiveDimensionalTwoInput) {
       ElementsAreArray({1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
                         13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}));
 }
+
+
+
+TEST(ConcatenationOpTest, FiveDimensionalTwoInputFloat16) {
+  ConcatenationOpModel<Eigen::half> m0({TensorType_FLOAT16, {2, 1, 2, 1, 3}},
+                                 /*axis=*/0,
+                                 /*num_inputs=*/2);
+
+  // std::vector<Eigen::half> input_data;
+
+  m0.SetInput(0, {Eigen::half{1.0f}, Eigen::half{2.0f}, Eigen::half{3.0f}, Eigen::half{4.0f}, Eigen::half{5.0f}, Eigen::half{6.0f}, Eigen::half{7.0f}, Eigen::half{8.0f}, Eigen::half{9.0f}, Eigen::half{10.0f}, Eigen::half{11.0f}, Eigen::half{12.0f}});
+
+  m0.SetInput(1, {Eigen::half{13.0f}, Eigen::half{14.0f}, Eigen::half{15.0f}, Eigen::half{16.0f}, Eigen::half{17.0f}, Eigen::half{18.0f}, Eigen::half{19.0f}, Eigen::half{20.0f}, Eigen::half{21.0f}, Eigen::half{22.0f}, Eigen::half{23.0f}, Eigen::half{24.0f}});
+
+  ASSERT_EQ(m0.Invoke(), kTfLiteOk);
+  EXPECT_THAT(
+      m0.GetOutput(),
+      ElementsAreArray({1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}));
+}
+
+
+
 
 TEST(ConcatenationOpTest, FiveDimensionalTwoInputUInt32) {
   ConcatenationOpModel<uint32_t> m0({TensorType_UINT32, {2, 1, 2, 1, 3}},
