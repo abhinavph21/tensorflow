@@ -57,6 +57,8 @@ limitations under the License.
 #include "tensorflow/lite/type_to_tflitetype.h"
 #include "tensorflow/lite/util.h"
 #include "tsl/platform/logging.h"
+#include "tensorflow/core/platform/bfloat16.h"
+
 
 namespace tflite {
 
@@ -106,6 +108,11 @@ inline std::vector<float> Dequantize(const std::vector<T>& data, float scale,
 template <>
 constexpr TfLiteType typeToTfLiteType<Eigen::half>() {
   return kTfLiteFloat16;
+}
+
+template <>
+constexpr TfLiteType typeToTfLiteType<tensorflow::bfloat16>() {
+  return kTfLiteBFloat16;
 }
 
 // A test model that contains a single operator. All operator inputs and

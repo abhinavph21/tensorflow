@@ -25,6 +25,8 @@ limitations under the License.
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/kernels/test_util.h"
 #include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/core/platform/bfloat16.h"
+
 
 namespace tflite {
 namespace {
@@ -105,6 +107,14 @@ TEST(ConcatenationOpTest, ThreeDimensionalOneInput) {
   ConcatenationOpModel<float> m0({TensorType_FLOAT32, {2, 1, 2}}, /*axis=*/1,
                                  /*num_inputs=*/1);
   m0.SetInput(0, {1.0f, 3.0f, 4.0f, 7.0f});
+  ASSERT_EQ(m0.Invoke(), kTfLiteOk);
+  EXPECT_THAT(m0.GetOutput(), ElementsAreArray({1, 3, 4, 7}));
+}
+
+TEST(ConcatenationOpTest, ThreeDimensionalOneInputBFloat16) {
+  ConcatenationOpModel<tensorflow::bfloat16> m0({TensorType_BFLOAT16, {2, 1, 2}}, /*axis=*/1,
+                                 /*num_inputs=*/1);
+  m0.SetInput(0, {tensorflow::bfloat16{1.0f}, tensorflow::bfloat16{3.0f}, tensorflow::bfloat16{4.0f}, tensorflow::bfloat16{7.0f}});
   ASSERT_EQ(m0.Invoke(), kTfLiteOk);
   EXPECT_THAT(m0.GetOutput(), ElementsAreArray({1, 3, 4, 7}));
 }
