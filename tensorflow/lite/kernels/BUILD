@@ -888,7 +888,6 @@ cc_library(
         "@fft2d",
         "@ruy//ruy/profiler:instrumentation",
         "//tensorflow/lite/c:c_api_types",
-        "//tensorflow/core/platform:bfloat16",
         "//tensorflow/lite/c:common",
         "//tensorflow/lite:array",
         "//tensorflow/lite:builtin_ops",
@@ -1538,7 +1537,6 @@ cc_test(
         "@com_google_absl//absl/types:span",
         "@com_google_googletest//:gtest",
         "@flatbuffers",
-        "@eigen_archive//:eigen3",
     ],
 )
 
@@ -1551,8 +1549,8 @@ cc_test(
         ":test_main",
         ":test_util",
         "//tensorflow/lite/schema:schema_fbs",
-        "//tensorflow/core/platform:bfloat16",
         "@com_google_googletest//:gtest",
+        "@eigen_archive//:eigen3",
         "@flatbuffers",
     ],
 )

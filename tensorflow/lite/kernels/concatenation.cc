@@ -31,9 +31,6 @@ limitations under the License.
 #include "tensorflow/lite/kernels/internal/types.h"
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/util.h"
-#include "tensorflow/core/platform/bfloat16.h"
-
-
 namespace tflite {
 namespace ops {
 namespace builtin {
@@ -98,7 +95,7 @@ TfLiteStatus EvalImpl(TfLiteContext* context, TfLiteNode* node, int axis,
       TF_LITE_CONCATENATION(Eigen::half);
       break;
     case kTfLiteBFloat16:
-      TF_LITE_CONCATENATION(tensorflow::bfloat16);
+      TF_LITE_CONCATENATION(Eigen::bfloat16);
       break;
     case kTfLiteInt32:
       TF_LITE_CONCATENATION(int32);

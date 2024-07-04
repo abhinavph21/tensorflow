@@ -37,6 +37,7 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
+#include <Eigen/Core>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include "absl/algorithm/container.h"
@@ -57,8 +58,6 @@ limitations under the License.
 #include "tensorflow/lite/type_to_tflitetype.h"
 #include "tensorflow/lite/util.h"
 #include "tsl/platform/logging.h"
-#include "tensorflow/core/platform/bfloat16.h"
-
 
 namespace tflite {
 
@@ -111,10 +110,9 @@ constexpr TfLiteType typeToTfLiteType<Eigen::half>() {
 }
 
 template <>
-constexpr TfLiteType typeToTfLiteType<tensorflow::bfloat16>() {
+constexpr TfLiteType typeToTfLiteType<Eigen::bfloat16>() {
   return kTfLiteBFloat16;
 }
-
 // A test model that contains a single operator. All operator inputs and
 // output are external to the model, so the tests can directly access them.
 // Typical usage:
