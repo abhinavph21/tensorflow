@@ -31,6 +31,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/internal/types.h"
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/util.h"
+
 namespace tflite {
 namespace ops {
 namespace builtin {
