@@ -1123,7 +1123,7 @@ TfLiteStatus SigmoidEval(TfLiteContext* context, TfLiteNode* node) {
   switch (input->type) {
     case kTfLiteFloat32: {
       if (kernel_type == kReference) {
-        reference_ops::Logistic(
+        reference_ops::Logistic<float>(
             GetTensorShape(input), GetTensorData<float>(input),
             GetTensorShape(output), GetTensorData<float>(output));
       } else {
@@ -1149,6 +1149,30 @@ TfLiteStatus SigmoidEval(TfLiteContext* context, TfLiteNode* node) {
         optimized_ops::Logistic(
             GetTensorShape(input), GetTensorData<float>(input),
             GetTensorShape(output), GetTensorData<float>(output));
+      }
+      break;
+    }
+    case kTfLiteFloat16: {
+      if (kernel_type == kReference) {
+        reference_ops::Logistic<Eigen::half>(
+            GetTensorShape(input), GetTensorData<Eigen::half>(input),
+            GetTensorShape(output), GetTensorData<Eigen::half>(output));
+      } else {
+        optimized_ops::Logistic(
+            GetTensorShape(input), GetTensorData<Eigen::half>(input),
+            GetTensorShape(output), GetTensorData<Eigen::half>(output));
+      }
+      break;
+    }
+    case kTfLiteBFloat16: {
+      if (kernel_type == kReference) {
+        reference_ops::Logistic<Eigen::bfloat16>(
+            GetTensorShape(input), GetTensorData<Eigen::bfloat16>(input),
+            GetTensorShape(output), GetTensorData<Eigen::bfloat16>(output));
+      } else {
+        optimized_ops::Logistic(
+            GetTensorShape(input), GetTensorData<Eigen::bfloat16>(input),
+            GetTensorShape(output), GetTensorData<Eigen::bfloat16>(output));
       }
       break;
     }
