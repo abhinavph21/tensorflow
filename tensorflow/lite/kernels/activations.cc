@@ -1051,6 +1051,30 @@ TfLiteStatus TanhEval(TfLiteContext* context, TfLiteNode* node) {
       }
       return kTfLiteOk;
     } break;
+    case kTfLiteFloat16: {
+      if (kernel_type == kReference) {
+        reference_ops::Tanh(
+            GetTensorShape(input), GetTensorData<Eigen::half>(input),
+            GetTensorShape(output), GetTensorData<Eigen::half>(output));
+      } else {
+        optimized_ops::Tanh(
+            GetTensorShape(input), GetTensorData<Eigen::half>(input),
+            GetTensorShape(output), GetTensorData<Eigen::half>(output));
+      }
+      return kTfLiteOk;
+    } break;
+    case kTfLiteBFloat16: {
+      if (kernel_type == kReference) {
+        reference_ops::Tanh(
+            GetTensorShape(input), GetTensorData<Eigen::bfloat16>(input),
+            GetTensorShape(output), GetTensorData<Eigen::bfloat16>(output));
+      } else {
+        optimized_ops::Tanh(
+            GetTensorShape(input), GetTensorData<Eigen::bfloat16>(input),
+            GetTensorShape(output), GetTensorData<Eigen::bfloat16>(output));
+      }
+      return kTfLiteOk;
+    } break;
     case kTfLiteInt16: {
       TanhParams params;
       params.input_left_shift = data->input_left_shift;
@@ -1158,7 +1182,7 @@ TfLiteStatus SigmoidEval(TfLiteContext* context, TfLiteNode* node) {
             GetTensorShape(input), GetTensorData<Eigen::half>(input),
             GetTensorShape(output), GetTensorData<Eigen::half>(output));
       } else {
-        optimized_ops::Logistic(
+        optimized_ops::Logistic<Eigen::half>(
             GetTensorShape(input), GetTensorData<Eigen::half>(input),
             GetTensorShape(output), GetTensorData<Eigen::half>(output));
       }
@@ -1170,7 +1194,7 @@ TfLiteStatus SigmoidEval(TfLiteContext* context, TfLiteNode* node) {
             GetTensorShape(input), GetTensorData<Eigen::bfloat16>(input),
             GetTensorShape(output), GetTensorData<Eigen::bfloat16>(output));
       } else {
-        optimized_ops::Logistic(
+        optimized_ops::Logistic<Eigen::bfloat16>(
             GetTensorShape(input), GetTensorData<Eigen::bfloat16>(input),
             GetTensorShape(output), GetTensorData<Eigen::bfloat16>(output));
       }

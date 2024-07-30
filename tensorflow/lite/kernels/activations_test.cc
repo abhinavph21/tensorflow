@@ -184,16 +184,16 @@ class BaseActivationsOpModel : public SingleOpModel {
   int input_;
   int output_;
 };
-template <typename input_type>
+template <typename T>
 class FloatActivationsOpModel : public BaseActivationsOpModel {
  public:
   using BaseActivationsOpModel::BaseActivationsOpModel;
 
-  void SetInput(const std::vector<input_type>& data) {
+  void SetInput(const std::vector<T>& data) {
     PopulateTensor(input_, data);
   }
-  std::vector<input_type> GetOutput() {
-    return ExtractVector<input_type>(output_);
+  std::vector<T> GetOutput() {
+    return ExtractVector<T>(output_);
   }
 };
 
@@ -572,6 +572,34 @@ TEST_P(TanhOpTest, Tanh) {
                                  0, -0.9999877, 0.9640275, 0.999329,    //
                                  0.99505475, -0.9640275, 1, 0.7615941,  //
                              })));
+}
+
+TEST_P(TanhOpTest, TanhFloat16) {
+  FloatActivationsOpModel<Eigen::half> m(GetRegistration(), BuiltinOperator_TANH,
+                            /*input=*/{TensorType_FLOAT16, {1, 2, 4, 1}});
+  m.SetInput({
+      Eigen::half(0), Eigen::half(-6), Eigen::half(2), Eigen::half(4),   //
+      Eigen::half(3), Eigen::half(-2), Eigen::half(10), Eigen::half(1),  //
+  });
+  ASSERT_EQ(m.Invoke(), kTfLiteOk);
+  EXPECT_THAT(m.GetOutput(), ElementsAreArray(ArrayFloatNear({
+                                 0, -0.9999877, 0.9640275, 0.999329,    //
+                                 0.99505475, -0.9640275, 1, 0.7615941,  //
+                             },1e-1)));
+}
+
+TEST_P(TanhOpTest, TanhBFloat16) {
+  FloatActivationsOpModel<Eigen::bfloat16> m(GetRegistration(), BuiltinOperator_TANH,
+                            /*input=*/{TensorType_BFLOAT16, {1, 2, 4, 1}});
+  m.SetInput({
+      Eigen::bfloat16(0), Eigen::bfloat16(-6), Eigen::bfloat16(2), Eigen::bfloat16(4),   //
+      Eigen::bfloat16(3), Eigen::bfloat16(-2), Eigen::bfloat16(10), Eigen::bfloat16(1),  //
+  });
+  ASSERT_EQ(m.Invoke(), kTfLiteOk);
+  EXPECT_THAT(m.GetOutput(), ElementsAreArray(ArrayFloatNear({
+                                 0, -0.9999877, 0.9640275, 0.999329,    //
+                                 0.99505475, -0.9640275, 1, 0.7615941,  //
+                             },1e-1)));
 }
 
 TEST(QuantizedActivationsOpTest, Relu6Uint8) {
